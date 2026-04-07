@@ -819,8 +819,8 @@ class _StudentDashboardState extends State<StudentDashboard> with SingleTickerPr
                                   ],
                                 ),
                               ),
-                              // ── Self-mark buttons (only for today, non-OE, not disabled) ──
-                              if (isToday && slot.subjectKey != 'OE' && !isDisabled) ...[
+                              // ── Self-mark buttons (only for today, not disabled) ──
+                              if (isToday && !isDisabled) ...[
                                 const SizedBox(width: 8),
                                 _markButton(
                                   icon: Icons.check,

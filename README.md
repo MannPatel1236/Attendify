@@ -53,6 +53,7 @@ Before you begin, ensure you have the following installed:
    ```
 
 3. **Run the Application:**
+Connect your phone via USB (with debugging enabled) or start an emulator/simulator, then run:
    ```bash
    # Run on the default connected device or simulator
    flutter run
