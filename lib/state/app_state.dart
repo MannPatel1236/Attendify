@@ -24,6 +24,31 @@ class SkipDaySuggestion {
   });
 }
 
+// ─── Studio dashboard view models (spec §4.2) ────────────────────────────
+
+class TodayClass {
+  final String subjectName;
+  final String timeLabel;
+  final String status; // 'safe' | 'warning' | 'danger' | 'neutral'
+  const TodayClass({
+    required this.subjectName,
+    required this.timeLabel,
+    required this.status,
+  });
+}
+
+class SubjectSummary {
+  final String name;
+  final double attendancePercent;
+  const SubjectSummary({required this.name, required this.attendancePercent});
+}
+
+class RecoverySuggestion {
+  final String action;
+  final double impact;
+  const RecoverySuggestion({required this.action, required this.impact});
+}
+
 // ─── Default attendance data (used on first launch) ──────────────────────────
 Map<String, Subject> _defaultSubjects() => {
   "DS (TH)":     Subject(name: "DS (TH)",     attended: 22, total: 24),
@@ -294,11 +319,90 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Studio design alias: single call to switch the active role.
+  /// Preserves existing side effects (e.g. setting _currentStudent on student login).
+  void setRole(UserRole role) {
+    switch (role) {
+      case UserRole.student:
+        loginAsStudent();
+        break;
+      case UserRole.teacher:
+        loginAsTeacher();
+        break;
+      case UserRole.none:
+        logout();
+        break;
+    }
+  }
+
   // ─── Timetable ────────────────────────────────────────────────────────────
   TimetableDay? getTodaySchedule() {
     final weekday = DateTime.now().weekday;
     if (weekday < 1 || weekday > 5) return null;
     return weeklyTimetable[weekday - 1];
+  }
+
+  // ─── Studio dashboard (spec §4.2) ───────────────────────────────────────
+  // Lightweight view models so the screen layer can stay declarative.
+  // These derive from the existing data — do not refactor the data layer.
+
+  String? get currentUserName => _currentStudent?.name;
+
+  double get overallAttendancePercent =>
+      _currentStudent?.overallAttendance ?? 0.0;
+
+  List<TodayClass> get todayClasses {
+    final schedule = getTodaySchedule();
+    if (schedule == null) return [];
+    final student = _currentStudent;
+    return schedule.classes.map((slot) {
+      String status = 'neutral';
+      if (student != null && student.subjects.containsKey(slot.subjectKey)) {
+        final pct = student.subjects[slot.subjectKey]!.percentage;
+        if (pct >= 80) {
+          status = 'safe';
+        } else if (pct >= 75) {
+          status = 'warning';
+        } else {
+          status = 'danger';
+        }
+      }
+      return TodayClass(
+        subjectName: slot.subject,
+        timeLabel: '${slot.startTime} – ${slot.endTime}',
+        status: status,
+      );
+    }).toList();
+  }
+
+  List<SubjectSummary> get subjects {
+    final student = _currentStudent;
+    if (student == null) return [];
+    final list = student.subjects.values
+        .map((s) => SubjectSummary(
+              name: s.name,
+              attendancePercent: s.percentage,
+            ))
+        .toList();
+    list.sort((a, b) => b.attendancePercent.compareTo(a.attendancePercent));
+    return list;
+  }
+
+  List<RecoverySuggestion> get recoverySuggestions {
+    final student = _currentStudent;
+    if (student == null) return [];
+    final out = <RecoverySuggestion>[];
+    for (final sub in student.subjects.values) {
+      if (sub.percentage < 75 && sub.classesToAttend > 0) {
+        // Each attended class moves overall by ~1/N% (rough estimate).
+        final impact = (1.0 / student.subjects.length) * 100;
+        out.add(RecoverySuggestion(
+          action: 'Attend ${sub.name} ×${sub.classesToAttend}',
+          impact: impact * sub.classesToAttend,
+        ));
+      }
+    }
+    return out;
   }
 
   // ─── Self-mark attendance ─────────────────────────────────────────────────
