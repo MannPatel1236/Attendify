@@ -56,8 +56,9 @@ class StudioTheme {
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: StudioColors.surfaceRaised,
+        isDense: true,
         contentPadding:
-            const EdgeInsets.symmetric(horizontal: StudioSpacing.s3, vertical: 0),
+            const EdgeInsets.symmetric(horizontal: StudioSpacing.s3, vertical: 10),
         hintStyle: const TextStyle(color: StudioColors.textMuted),
         border: OutlineInputBorder(
           borderRadius:

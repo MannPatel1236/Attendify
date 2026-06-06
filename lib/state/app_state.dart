@@ -4,7 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/student_model.dart';
 import '../models/timetable_model.dart';
-import '../subject_model.dart';
+import '../models/subject_model.dart';
 
 enum UserRole { none, student, teacher }
 
