@@ -28,10 +28,23 @@ class SectionHeader extends StatelessWidget {
           padding: const EdgeInsets.only(top: StudioSpacing.s4),
           child: Row(
             children: [
-              Text(_prefix + label, style: StudioTypography.sectionLabel()),
+              Flexible(
+                child: Text(
+                  _prefix + label,
+                  style: StudioTypography.sectionLabel(),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
               const Spacer(),
               if (meta != null)
-                Text(meta!, style: StudioTypography.monoCaption()),
+                Flexible(
+                  child: Text(
+                    meta!,
+                    style: StudioTypography.monoCaption(),
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.end,
+                  ),
+                ),
             ],
           ),
         ),

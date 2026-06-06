@@ -42,8 +42,9 @@ class TeacherDashboard extends StatelessWidget {
                   primary: appState.teacherTodayClasses[i].subjectName,
                   secondary: appState.teacherTodayClasses[i].timeLabel,
                   trailing: Text(
-                    '${appState.teacherTodayClasses[i].presentCount}/${appState.teacherTodayClasses[i].totalCount} PRESENT',
+                    '${appState.teacherTodayClasses[i].presentCount}/${appState.teacherTodayClasses[i].totalCount}',
                     style: StudioTypography.monoCaption(),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               const SectionHeader(index: 2, label: 'THIS WEEK'),
@@ -53,8 +54,9 @@ class TeacherDashboard extends StatelessWidget {
                   primary: appState.teacherWeekClasses[i].subjectName,
                   secondary: appState.teacherWeekClasses[i].timeLabel,
                   trailing: Text(
-                    '${appState.teacherWeekClasses[i].day} · ${appState.teacherWeekClasses[i].presentCount}/${appState.teacherWeekClasses[i].totalCount}',
+                    '${appState.teacherWeekClasses[i].presentCount}/${appState.teacherWeekClasses[i].totalCount}',
                     style: StudioTypography.monoCaption(),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               const SectionHeader(index: 3, label: 'REPORTS'),
@@ -63,6 +65,7 @@ class TeacherDashboard extends StatelessWidget {
                 child: StudioButton(
                   label: 'Export this week as CSV',
                   variant: StudioButtonVariant.secondary,
+                  fullWidth: true,
                   onPressed: () {
                     // CSV export: actual implementation lives in services/.
                     // No-op stub for the visual rebuild.
@@ -78,11 +81,10 @@ class TeacherDashboard extends StatelessWidget {
   }
 
   String _formatDate(DateTime d) {
-    const days = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
     const months = [
       'JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN',
       'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'
     ];
-    return '${days[d.weekday - 1]} · ${d.day.toString().padLeft(2, '0')} ${months[d.month - 1]}';
+    return '${d.day.toString().padLeft(2, '0')} ${months[d.month - 1]}';
   }
 }

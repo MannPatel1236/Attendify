@@ -64,15 +64,26 @@ class NumberedRow extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(primary, style: StudioTypography.bodyEmphasis()),
+                  Text(
+                    primary,
+                    style: StudioTypography.bodyEmphasis(),
+                    overflow: TextOverflow.ellipsis,
+                  ),
                   if (secondary != null) ...[
                     const SizedBox(height: 2),
-                    Text(secondary!, style: StudioTypography.caption()),
+                    Text(
+                      secondary!,
+                      style: StudioTypography.caption(),
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ],
                 ],
               ),
             ),
-            if (trailing != null) trailing!,
+            if (trailing != null) ...[
+              const SizedBox(width: StudioSpacing.s3),
+              Flexible(child: trailing!),
+            ],
           ],
         ),
       ),

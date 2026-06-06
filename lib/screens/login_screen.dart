@@ -125,12 +125,16 @@ class LoginScreen extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      'OFFLINE-FIRST · OPEN SOURCE',
-                      style: StudioTypography.monoCaption().copyWith(
-                        letterSpacing: 1.5,
+                    Flexible(
+                      child: Text(
+                        'OFFLINE-FIRST · OPEN SOURCE',
+                        style: StudioTypography.monoCaption().copyWith(
+                          letterSpacing: 1.5,
+                        ),
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
+                    const SizedBox(width: StudioSpacing.s2),
                     Row(
                       children: [
                         _swatch(StudioColors.accentPrimary),

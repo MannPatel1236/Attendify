@@ -68,14 +68,22 @@ class StudioButton extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: StudioSpacing.s4),
           alignment: Alignment.center,
           child: Row(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisSize: fullWidth ? MainAxisSize.max : MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               if (leadingIcon != null) ...[
                 leadingIcon!,
                 const SizedBox(width: StudioSpacing.s2),
               ],
-              Text(label, style: StudioTypography.button().copyWith(color: _fg)),
+              Flexible(
+                child: Text(
+                  label,
+                  style: StudioTypography.button().copyWith(color: _fg),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                ),
+              ),
             ],
           ),
         ),
