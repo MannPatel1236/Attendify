@@ -1,203 +1,78 @@
-# Design System Master File
+# Attendify Design System · Studio Linear-Soft
 
-> **LOGIC:** When building a specific page, first check `design-system/pages/[page-name].md`.
-> If that file exists, its rules **override** this Master file.
-> If not, strictly follow the rules below.
+This is the canonical reference for the Attendify visual design.
 
----
-
-**Project:** Attendify
-**Generated:** 2026-05-11 19:46:30
-**Category:** Educational App
+**The full design spec is in `docs/superpowers/specs/2026-06-06-attendify-design-direction.md`.** This file is a quick reference; the spec is the source of truth.
 
 ---
 
-## Global Rules
+## Direction
 
-### Color Palette
+A precision instrument for students who take attendance seriously. Dark, calm, dense with meaning but never cluttered. Linear's product rigor + Vercel's restraint + an editorial layer (numbered sections, monospace data, sharp geometry) that signals "this team thought about this."
 
-| Role | Hex | CSS Variable |
-|------|-----|--------------|
-| Primary | `#0891B2` | `--color-primary` |
-| Secondary | `#22D3EE` | `--color-secondary` |
-| CTA/Accent | `#059669` | `--color-cta` |
-| Background | `#ECFEFF` | `--color-background` |
-| Text | `#164E63` | `--color-text` |
+## Tokens
 
-**Color Notes:** Calm cyan + health green
+### Surfaces
+- `surface/base` — `#0B0F1A` — app background
+- `surface/raised` — `#0F1320` — cards, list items
+- `surface/overlay` — `#161B2A` — modals, dropdowns
 
-### Typography
+### Borders
+- `border/subtle` — `#1E2330` — default 1px dividers
+- `border/strong` — `#2A3142` — hover/focus borders
 
-- **Heading Font:** Baloo 2
-- **Body Font:** Comic Neue
-- **Mood:** kids, education, playful, friendly, colorful, learning
-- **Google Fonts:** [Baloo 2 + Comic Neue](https://fonts.google.com/share?selection.family=Baloo+2:wght@400;500;600;700|Comic+Neue:wght@300;400;700)
+### Text
+- `text/primary` — `#FFFFFF` — headlines, key data
+- `text/secondary` — `#E4E7EB` — body, list item primary
+- `text/tertiary` — `#8A94A6` — captions, meta
+- `text/muted` — `#6B7280` — disabled, footnotes
 
-**CSS Import:**
-```css
-@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700&family=Comic+Neue:wght@300;400;700&display=swap');
-```
+### Accent
+- `accent/primary` — `#5E6AD2` — the one signature color
+- `accent/primary-dim` — `rgba(94,106,210,0.12)` — selected/hover backgrounds
 
-### Spacing Variables
+### Semantic
+- `semantic/safe` — `#10B981` — ≥80%
+- `semantic/warning` — `#F59E0B` — 75-80%
+- `semantic/danger` — `#EF4444` — <75%
 
-| Token | Value | Usage |
-|-------|-------|-------|
-| `--space-xs` | `4px` / `0.25rem` | Tight gaps |
-| `--space-sm` | `8px` / `0.5rem` | Icon gaps, inline spacing |
-| `--space-md` | `16px` / `1rem` | Standard padding |
-| `--space-lg` | `24px` / `1.5rem` | Section padding |
-| `--space-xl` | `32px` / `2rem` | Large gaps |
-| `--space-2xl` | `48px` / `3rem` | Section margins |
-| `--space-3xl` | `64px` / `4rem` | Hero padding |
+## Geometry
 
-### Shadow Depths
+- Cards: 0px radius, 1px `border/subtle`, no shadow
+- Buttons: 8px radius
+- Inputs: 8px radius
+- Section dividers: 1px `border/subtle`
+- Icons: Tabler line icons, 1.5px stroke, 16/20/24px sizes
 
-| Level | Value | Usage |
-|-------|-------|-------|
-| `--shadow-sm` | `0 1px 2px rgba(0,0,0,0.05)` | Subtle lift |
-| `--shadow-md` | `0 4px 6px rgba(0,0,0,0.1)` | Cards, buttons |
-| `--shadow-lg` | `0 10px 15px rgba(0,0,0,0.1)` | Modals, dropdowns |
-| `--shadow-xl` | `0 20px 25px rgba(0,0,0,0.15)` | Hero images, featured cards |
+## Typography
 
----
+- Inter: body, headlines, buttons
+- JetBrains Mono: section labels, data, percentages, codes
+- Tabular-nums enabled globally on the mono family
 
-## Component Specs
+## Motion
 
-### Buttons
+- Default: 180ms
+- Named exceptions: 240ms (page transition), 320ms (gauge + progress bar fill)
+- Easing: `cubic-bezier(0.4, 0, 0.2, 1)` (Material standard)
+- No scale/rotate on hover, no hero animations, no springs
 
-```css
-/* Primary Button */
-.btn-primary {
-  background: #059669;
-  color: white;
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-weight: 600;
-  transition: all 200ms ease;
-  cursor: pointer;
-}
+## Components
 
-.btn-primary:hover {
-  opacity: 0.9;
-  transform: translateY(-1px);
-}
+All components live in `lib/widgets/studio/` and are documented in the spec:
 
-/* Secondary Button */
-.btn-secondary {
-  background: transparent;
-  color: #0891B2;
-  border: 2px solid #0891B2;
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-weight: 600;
-  transition: all 200ms ease;
-  cursor: pointer;
-}
-```
+- `NumberedRow` — fundamental list unit (spec §3.1)
+- `SegmentedControl` — default + compact (spec §3.2)
+- `StudioButton` — primary/secondary/destructive (spec §3.3)
+- `HeroAttendanceGauge` — 270° arc + threshold tick (spec §3.4)
+- `SubjectProgressBar` — 2px bar with semantic fill (spec §3.5)
+- `StudioInput` — text field (spec §3.6)
+- `StudioCard` — used sparingly (spec §3.7)
+- `SectionHeader` — `01 / LABEL` (spec §3.9)
 
-### Cards
+## Compliance
 
-```css
-.card {
-  background: #ECFEFF;
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: var(--shadow-md);
-  transition: all 200ms ease;
-  cursor: pointer;
-}
-
-.card:hover {
-  box-shadow: var(--shadow-lg);
-  transform: translateY(-2px);
-}
-```
-
-### Inputs
-
-```css
-.input {
-  padding: 12px 16px;
-  border: 1px solid #E2E8F0;
-  border-radius: 8px;
-  font-size: 16px;
-  transition: border-color 200ms ease;
-}
-
-.input:focus {
-  border-color: #0891B2;
-  outline: none;
-  box-shadow: 0 0 0 3px #0891B220;
-}
-```
-
-### Modals
-
-```css
-.modal-overlay {
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
-}
-
-.modal {
-  background: white;
-  border-radius: 16px;
-  padding: 32px;
-  box-shadow: var(--shadow-xl);
-  max-width: 500px;
-  width: 90%;
-}
-```
-
----
-
-## Style Guidelines
-
-**Style:** Claymorphism
-
-**Keywords:** Soft 3D, chunky, playful, toy-like, bubbly, thick borders (3-4px), double shadows, rounded (16-24px)
-
-**Best For:** Educational apps, children's apps, SaaS platforms, creative tools, fun-focused, onboarding, casual games
-
-**Key Effects:** Inner+outer shadows (subtle, no hard lines), soft press (200ms ease-out), fluffy elements, smooth transitions
-
-### Page Pattern
-
-**Pattern Name:** App Store Style Landing
-
-- **Conversion Strategy:** Show real screenshots. Include ratings (4.5+ stars). QR code for mobile. Platform-specific CTAs.
-- **CTA Placement:** Download buttons prominent (App Store + Play Store) throughout
-- **Section Order:** 1. Hero with device mockup, 2. Screenshots carousel, 3. Features with icons, 4. Reviews/ratings, 5. Download CTAs
-
----
-
-## Anti-Patterns (Do NOT Use)
-
-- ❌ Dark modes
-- ❌ Complex jargon
-
-### Additional Forbidden Patterns
-
-- ❌ **Emojis as icons** — Use SVG icons (Heroicons, Lucide, Simple Icons)
-- ❌ **Missing cursor:pointer** — All clickable elements must have cursor:pointer
-- ❌ **Layout-shifting hovers** — Avoid scale transforms that shift layout
-- ❌ **Low contrast text** — Maintain 4.5:1 minimum contrast ratio
-- ❌ **Instant state changes** — Always use transitions (150-300ms)
-- ❌ **Invisible focus states** — Focus states must be visible for a11y
-
----
-
-## Pre-Delivery Checklist
-
-Before delivering any UI code, verify:
-
-- [ ] No emojis used as icons (use SVG instead)
-- [ ] All icons from consistent icon set (Heroicons/Lucide)
-- [ ] `cursor-pointer` on all clickable elements
-- [ ] Hover states with smooth transitions (150-300ms)
-- [ ] Light mode: text contrast 4.5:1 minimum
-- [ ] Focus states visible for keyboard navigation
-- [ ] `prefers-reduced-motion` respected
-- [ ] Responsive: 375px, 768px, 1024px, 1440px
-- [ ] No content hidden behind fixed navbars
-- [ ] No horizontal scroll on mobile
+The grep-based test in `test/design_system_compliance_test.dart` enforces:
+- No imports of softclaw/clay/monolith code
+- No `BoxShadow` in the codebase
+- No non-zero `BorderRadius.circular` outside the studio design system
