@@ -64,6 +64,19 @@ class TeacherClassEntry {
   });
 }
 
+class StudentView {
+  final String id;
+  final String rollNumber;
+  final String name;
+  final String? status; // 'Present' | 'Absent' | 'Cancelled' | null = unmarked
+  const StudentView({
+    required this.id,
+    required this.rollNumber,
+    required this.name,
+    this.status,
+  });
+}
+
 // ─── Default attendance data (used on first launch) ──────────────────────────
 Map<String, Subject> _defaultSubjects() => {
   "DS (TH)":     Subject(name: "DS (TH)",     attended: 22, total: 24),
@@ -451,6 +464,36 @@ class AppState extends ChangeNotifier {
       }
     }
     return out;
+  }
+
+  // ─── Roll call (spec §4.4) ───────────────────────────────────────────────
+  // Visual rebuild only — _studentStatuses is local in-memory state.
+
+  final Map<String, String> _studentStatuses = {};
+  String? _activeClassId;
+
+  List<StudentView> studentsForClass(String? classId) {
+    _activeClassId = classId;
+    return _students.map((s) => StudentView(
+          id: s.id,
+          rollNumber: s.id, // Derive roll number from id for now
+          name: s.name,
+          status: _studentStatuses[s.id],
+        )).toList();
+  }
+
+  String? classNameFor(String? classId) {
+    if (classId == null) return null;
+    return classId;
+  }
+
+  void setStudentStatus(String studentId, String status) {
+    _studentStatuses[studentId] = status;
+    notifyListeners();
+  }
+
+  void saveAttendance(String? classId) {
+    // No-op for the visual rebuild. Future: persist via repository.
   }
 
   // ─── Self-mark attendance ─────────────────────────────────────────────────
