@@ -4,7 +4,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'studio_tokens.dart';
-import 'studio_typography.dart';
 
 class StudioTheme {
   StudioTheme._();
