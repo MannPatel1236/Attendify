@@ -100,9 +100,6 @@ class AppState extends ChangeNotifier {
   Student? _currentStudent;
   Student? get currentStudent => _currentStudent;
 
-  ThemeMode _themeMode = ThemeMode.system;
-  ThemeMode get themeMode => _themeMode;
-
   bool _isLoaded = false;
   bool get isLoaded => _isLoaded;
 
@@ -207,7 +204,6 @@ class AppState extends ChangeNotifier {
   static const _kSubjects = 'subjects_v1';
   static const _kHolidays = 'holidays_v1';
   static const _kCancelled = 'cancelled_v1';
-  static const _kTheme = 'theme_v1';
   static const _kTodayMarks = 'today_marks_v1';
   static const _kTodayMarksDate = 'today_marks_date_v1';
 
@@ -215,16 +211,6 @@ class AppState extends ChangeNotifier {
   Future<void> loadFromDisk() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-
-      // ── Theme ──
-      final savedTheme = prefs.getString(_kTheme);
-      if (savedTheme == 'dark') {
-        _themeMode = ThemeMode.dark;
-      } else if (savedTheme == 'light') {
-        _themeMode = ThemeMode.light;
-      } else {
-        _themeMode = ThemeMode.system;
-      }
 
       // ── Subjects ──
       final subJson = prefs.getString(_kSubjects);
@@ -259,7 +245,6 @@ class AppState extends ChangeNotifier {
   Future<void> _save() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      prefs.setString(_kTheme, _themeMode == ThemeMode.dark ? 'dark' : _themeMode == ThemeMode.light ? 'light' : 'system');
       final mann = _students.firstWhere((s) => s.id == "S01", orElse: () => _students.first);
       final subMap = mann.subjects.map((key, sub) => MapEntry(
         key, {'name': sub.name, 'a': sub.attended, 't': sub.total},
@@ -297,35 +282,6 @@ class AppState extends ChangeNotifier {
       return decoded.map((k, v) => MapEntry(k, v as bool));
     } catch (_) {
       return {};
-    }
-  }
-
-  // ─── Theme ────────────────────────────────────────────────────────────────
-  void toggleTheme() {
-    if (_themeMode == ThemeMode.dark) {
-      _themeMode = ThemeMode.light;
-    } else if (_themeMode == ThemeMode.light) {
-      _themeMode = ThemeMode.system;
-    } else {
-      _themeMode = ThemeMode.dark;
-    }
-    _save();
-    notifyListeners();
-  }
-
-  String get themeLabel {
-    switch (_themeMode) {
-      case ThemeMode.dark: return 'Dark';
-      case ThemeMode.light: return 'Light';
-      default: return 'Auto';
-    }
-  }
-
-  IconData get themeIcon {
-    switch (_themeMode) {
-      case ThemeMode.dark: return Icons.dark_mode;
-      case ThemeMode.light: return Icons.light_mode;
-      default: return Icons.brightness_auto;
     }
   }
 
