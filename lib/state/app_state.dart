@@ -496,6 +496,24 @@ class AppState extends ChangeNotifier {
     // No-op for the visual rebuild. Future: persist via repository.
   }
 
+  // ─── Settings (spec §4.5) ────────────────────────────────────────────────
+
+  String? get currentUserEmail => 'mann@attendify.app';
+
+  String? get currentUserRollNumber => _currentStudent?.id;
+
+  bool _notificationsEnabled = true;
+  bool get notificationsEnabled => _notificationsEnabled;
+  void setNotificationsEnabled(bool value) {
+    _notificationsEnabled = value;
+    notifyListeners();
+  }
+
+  void deleteAccount() {
+    // Visual rebuild only — would normally clear storage + sign out.
+    logout();
+  }
+
   // ─── Self-mark attendance ─────────────────────────────────────────────────
   void markSelfPresent(String subjectKey) {
     final student = _currentStudent;
