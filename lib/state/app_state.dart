@@ -49,6 +49,21 @@ class RecoverySuggestion {
   const RecoverySuggestion({required this.action, required this.impact});
 }
 
+class TeacherClassEntry {
+  final String subjectName;
+  final String timeLabel;
+  final int presentCount;
+  final int totalCount;
+  final String? day;
+  const TeacherClassEntry({
+    required this.subjectName,
+    required this.timeLabel,
+    required this.presentCount,
+    required this.totalCount,
+    this.day,
+  });
+}
+
 // ─── Default attendance data (used on first launch) ──────────────────────────
 Map<String, Subject> _defaultSubjects() => {
   "DS (TH)":     Subject(name: "DS (TH)",     attended: 22, total: 24),
@@ -399,6 +414,39 @@ class AppState extends ChangeNotifier {
         out.add(RecoverySuggestion(
           action: 'Attend ${sub.name} ×${sub.classesToAttend}',
           impact: impact * sub.classesToAttend,
+        ));
+      }
+    }
+    return out;
+  }
+
+  // ─── Teacher dashboard (spec §4.3) ───────────────────────────────────────
+  // Placeholder data — visual rebuild only, no roll-up logic yet.
+
+  List<TeacherClassEntry> get teacherTodayClasses {
+    final schedule = getTodaySchedule();
+    if (schedule == null) return [];
+    return schedule.classes.map((slot) {
+      final total = _students.length;
+      return TeacherClassEntry(
+        subjectName: slot.subject,
+        timeLabel: '${slot.startTime} – ${slot.endTime}',
+        presentCount: 0,
+        totalCount: total,
+      );
+    }).toList();
+  }
+
+  List<TeacherClassEntry> get teacherWeekClasses {
+    final out = <TeacherClassEntry>[];
+    for (final day in weeklyTimetable) {
+      for (final slot in day.classes) {
+        out.add(TeacherClassEntry(
+          subjectName: slot.subject,
+          timeLabel: '${slot.startTime} – ${slot.endTime}',
+          presentCount: 0,
+          totalCount: _students.length,
+          day: day.dayName,
         ));
       }
     }

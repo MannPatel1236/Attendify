@@ -1,7 +1,13 @@
+// Teacher dashboard: spec §4.3.
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../state/app_state.dart';
-import 'roll_call_screen.dart';
+import '../theme/studio_tokens.dart';
+import '../theme/studio_typography.dart';
+import '../widgets/studio/section_header.dart';
+import '../widgets/studio/numbered_row.dart';
+import '../widgets/studio/studio_button.dart';
 
 class TeacherDashboard extends StatelessWidget {
   const TeacherDashboard({super.key});
@@ -9,88 +15,74 @@ class TeacherDashboard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final cardBg = isDark ? const Color(0xFF1E1E2C) : Colors.white;
-
-    final subjects = ["ML-I (TH)", "DS (TH)", "SDS (TH)", "EFM (TH)", "CMPM (TH)", "WE (PR)", "PBC (TUT)", "DS (PR)", "ML-I (PR)", "SDS (PR)", "CMPM (PR)"];
+    final today = _formatDate(DateTime.now());
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Teacher Portal"),
-        actions: [
-          IconButton(
-            icon: Icon(appState.themeIcon),
-            onPressed: () => appState.toggleTheme(),
-            tooltip: "Theme: ${appState.themeLabel}",
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: StudioSpacing.s4),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: StudioSpacing.s6),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text('Classes', style: StudioTypography.pageTitle()),
+                    ),
+                    Text(today, style: StudioTypography.monoCaption()),
+                  ],
+                ),
+              ),
+              const SectionHeader(index: 1, label: 'TODAY'),
+              for (var i = 0; i < appState.teacherTodayClasses.length; i++)
+                NumberedRow(
+                  index: i + 1,
+                  primary: appState.teacherTodayClasses[i].subjectName,
+                  secondary: appState.teacherTodayClasses[i].timeLabel,
+                  trailing: Text(
+                    '${appState.teacherTodayClasses[i].presentCount}/${appState.teacherTodayClasses[i].totalCount} PRESENT',
+                    style: StudioTypography.monoCaption(),
+                  ),
+                ),
+              const SectionHeader(index: 2, label: 'THIS WEEK'),
+              for (var i = 0; i < appState.teacherWeekClasses.length; i++)
+                NumberedRow(
+                  index: i + 1,
+                  primary: appState.teacherWeekClasses[i].subjectName,
+                  secondary: appState.teacherWeekClasses[i].timeLabel,
+                  trailing: Text(
+                    '${appState.teacherWeekClasses[i].day} · ${appState.teacherWeekClasses[i].presentCount}/${appState.teacherWeekClasses[i].totalCount}',
+                    style: StudioTypography.monoCaption(),
+                  ),
+                ),
+              const SectionHeader(index: 3, label: 'REPORTS'),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: StudioSpacing.s4),
+                child: StudioButton(
+                  label: 'Export this week as CSV',
+                  variant: StudioButtonVariant.secondary,
+                  onPressed: () {
+                    // CSV export: actual implementation lives in services/.
+                    // No-op stub for the visual rebuild.
+                  },
+                ),
+              ),
+              const SizedBox(height: StudioSpacing.s10),
+            ],
           ),
-          IconButton(icon: const Icon(Icons.logout), onPressed: () => appState.logout()),
-        ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "Select Subject to Take Roll Call",
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: isDark ? Colors.white : Colors.black87,
-              ),
-            ),
-            const SizedBox(height: 20),
-            Expanded(
-              child: ListView.builder(
-                itemCount: subjects.length,
-                itemBuilder: (context, index) {
-                  final subject = subjects[index];
-                  final typeColor = _typeColor(subject);
-
-                  return Container(
-                    margin: const EdgeInsets.only(bottom: 10),
-                    decoration: BoxDecoration(
-                      color: cardBg,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: isDark ? Colors.white.withOpacity(0.06) : Colors.grey.shade200),
-                    ),
-                    child: ListTile(
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                      leading: Container(
-                        width: 4,
-                        height: 36,
-                        decoration: BoxDecoration(color: typeColor, borderRadius: BorderRadius.circular(2)),
-                      ),
-                      title: Text(
-                        subject,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                          color: isDark ? Colors.white : Colors.black87,
-                        ),
-                      ),
-                      trailing: Icon(Icons.arrow_forward_ios, size: 16,
-                        color: isDark ? Colors.grey.shade500 : Colors.grey.shade400),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => RollCallScreen(subjectName: subject)),
-                        );
-                      },
-                    ),
-                  );
-                },
-              ),
-            ),
-          ],
         ),
       ),
     );
   }
 
-  Color _typeColor(String subject) {
-    if (subject.contains('(PR)')) return const Color(0xFF00B4D8);
-    if (subject.contains('(TUT)')) return const Color(0xFFFF9F43);
-    return const Color(0xFF6C63FF);
+  String _formatDate(DateTime d) {
+    const days = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
+    const months = [
+      'JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN',
+      'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'
+    ];
+    return '${days[d.weekday - 1]} · ${d.day.toString().padLeft(2, '0')} ${months[d.month - 1]}';
   }
 }
